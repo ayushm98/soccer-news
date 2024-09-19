@@ -31,35 +31,62 @@ router.post('/', async (req, res) => {
   }
 });
 
-
-// GET live transfer data from external API and store in DB
+// GET live transfer data from SoccerDataAPI
 router.get('/live', async (req, res) => {
   try {
-    const response = await axios.get('https://api.football-data.org/v4/transfers', {
+    const response = await axios.get('https://api.soccerdataapi.com/transfers/', {
+      params: {
+        team_id: 4138, // You can customize the team ID here
+        auth_token: process.env.SOCCER_API_KEY, // Make sure to add this to your .env file
+      },
       headers: {
-        'X-Auth-Token': process.env.API_KEY
-      }
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip',
+      },
     });
 
-    const transfers = response.data.transfers; // Adjust this based on the API structure
+    const transfers = response.data.transfers.transfers_in; // Adjust based on the response structure
 
-    const savedTransfers = await Promise.all(transfers.map(async (transfer) => {
-      const newTransfer = new Transfer({
-        player: transfer.playerName,
-        fromClub: transfer.fromClub,
-        toClub: transfer.toClub,
-        fee: transfer.transferFee,
-        date: transfer.transferDate
-      });
-      return newTransfer.save();
-    }));
+   // Process transfers_in
+   const transfersIn = response.data.transfers.transfers_in;
+   const savedTransfersIn = await Promise.all(
+     transfersIn.map(async (transfer) => {
+       const transferDate = new Date(transfer.transfer_date);
+       const newTransfer = new Transfer({
+         player: transfer.player_name,
+         fromClub: transfer.from_team.name,
+         toClub: 'Liverpool', // Assuming this is for Liverpool
+         fee: transfer.transfer_amount || 0,
+         date: !isNaN(transferDate.getTime()) ? transferDate : new Date(),
+       });
+       return newTransfer.save();
+     })
+   );
 
-    res.status(200).json({ message: 'Live data fetched and saved!', savedTransfers });
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching live data', error: err.message });
-  }
+   // Process transfers_out
+   const transfersOut = response.data.transfers.transfers_out;
+   const savedTransfersOut = await Promise.all(
+     transfersOut.map(async (transfer) => {
+       const transferDate = new Date(transfer.transfer_date);
+       const newTransfer = new Transfer({
+         player: transfer.player_name,
+         fromClub: 'Liverpool', // Assuming the fromClub is Liverpool for outgoing transfers
+         toClub: transfer.to_team ? transfer.to_team.name : 'Unknown', // Handle missing to_team info
+         fee: transfer.transfer_amount || 0,
+         date: !isNaN(transferDate.getTime()) ? transferDate : new Date(),
+       });
+       return newTransfer.save();
+     })
+   );
+
+   // Combine both in and out transfers
+   const allTransfers = [...savedTransfersIn, ...savedTransfersOut];
+
+   res.status(200).json({ message: 'Live data fetched and saved!', savedTransfers: allTransfers });
+ } catch (err) {
+   console.error('Error fetching live data:', err.response ? err.response.data : err.message);
+   res.status(500).json({ message: 'Error fetching live data', error: err.message });
+ }
 });
-
-
 
 module.exports = router;
