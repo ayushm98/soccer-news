@@ -17,6 +17,7 @@ const newsRoutes = require('./routes/newsRoutes');
 app.use(express.json());
 app.use(cors());
 
+/*
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/soccer-wealth-index', {
   useNewUrlParser: true,
@@ -26,6 +27,16 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/soccer-wealth-i
 }).catch(err => {
   console.error("Error connecting to MongoDB", err);
 });
+*/
+
+// Connect to MongoDB using the URI from environment variables
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("MongoDB connected...");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB", err);
+  });
 
 // Test route
 app.get('/', (req, res) => {
