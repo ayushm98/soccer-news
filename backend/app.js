@@ -43,7 +43,7 @@ app.listen(PORT, () => {
   console.log(`Backend server is running on port ${PORT}`);
 });
 
-
+/*
 // Cron job to fetch live transfer data every hour
 cron.schedule('0 * * * *', async () => {
   console.log('Fetching live transfer data...');
@@ -80,7 +80,7 @@ cron.schedule('0 * * * *', async () => {
     console.error('Error fetching live data', err.message);
   }
 });
-
+*/
 
 
 app.get('/api/fetch-news', async (req, res) => {
