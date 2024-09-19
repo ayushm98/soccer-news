@@ -8,6 +8,11 @@
     "dev": "nodemon app.js",
     "heroku-postbuild": "npm install"
   },
+
+  "engines": {
+    "node": "22.8.0"  
+  },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
