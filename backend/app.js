@@ -10,6 +10,8 @@ const axios = require('axios');
 const Transfer = require('./models/Transfer');
 const clubRoutes = require('./routes/clubRoutes');
 const transferRoutes = require('./routes/transferRoutes');
+const NewsArticle = require('./models/NewsArticle');
+const newsRoutes = require('./routes/newsRoutes');
 
 // Middleware
 app.use(express.json());
@@ -33,6 +35,14 @@ app.get('/', (req, res) => {
 // Use routes
 app.use('/api/clubs', clubRoutes);
 app.use('/api/transfers', transferRoutes);
+app.use('/api/news', newsRoutes);
+
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Backend server is running on port ${PORT}`);
+});
+
 
 // Cron job to fetch live transfer data every hour
 cron.schedule('0 * * * *', async () => {
@@ -71,7 +81,43 @@ cron.schedule('0 * * * *', async () => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Backend server is running on port ${PORT}`);
+
+
+app.get('/api/fetch-news', async (req, res) => {
+  console.log('Manually fetching soccer news...');
+
+  try {
+    const response = await axios.get('https://newsapi.org/v2/everything', {
+      params: {
+        q: 'soccer',
+        apiKey: process.env.NEWS_API_KEY,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip',
+      },
+    });
+
+    const articles = response.data.articles;
+
+    await Promise.all(
+      articles.map(async (article) => {
+        const newArticle = new NewsArticle({
+          title: article.title,
+          source: article.source.name,
+          url: article.url,
+          publishedAt: new Date(article.publishedAt),
+          summary: article.description,
+          relatedClub: article.relatedClub || 'General',
+        });
+
+        return newArticle.save();
+      })
+    );
+
+    res.status(200).json({ message: 'Soccer news fetched and saved successfully!' });
+  } catch (err) {
+    console.error('Error fetching soccer news:', err.message);
+    res.status(500).json({ error: 'Failed to fetch soccer news' });
+  }
 });
