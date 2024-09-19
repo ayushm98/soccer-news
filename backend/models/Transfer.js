@@ -20,10 +20,18 @@ const transferSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  marketValue: {
+    type: Number,
+  },
   date: {
     type: Date,
     required: true
   },
+  status: {
+    type: String,
+    enum: ['rumor', 'confirmed'],
+    default: 'rumor'
+  }
 });
 
 const Transfer = mongoose.model('Transfer', transferSchema);

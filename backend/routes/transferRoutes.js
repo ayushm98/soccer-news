@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 // GET live transfer data from external API and store in DB
 router.get('/live', async (req, res) => {
   try {
-    const response = await axios.get('API_ENDPOINT_HERE', {
+    const response = await axios.get('https://api.football-data.org/v4/transfers', {
       headers: {
         'X-Auth-Token': process.env.API_KEY
       }

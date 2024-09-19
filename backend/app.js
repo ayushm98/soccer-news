@@ -45,7 +45,7 @@ cron.schedule('0 * * * *', async () => {
   console.log('Fetching live transfer data...');
 
   try {
-    const response = await axios.get('API_ENDPOINT_HERE', {
+    const response = await axios.get('https://api.football-data.org/v4/transfers', {
       headers: {
         'X-Auth-Token': process.env.API_KEY
       }
