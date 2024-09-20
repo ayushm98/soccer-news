@@ -9,9 +9,6 @@
     "heroku-postbuild": "npm install"
   },
 
-  "engines": {
-    "node": "22.x"
-  },
 
   "keywords": [],
   "author": "",
