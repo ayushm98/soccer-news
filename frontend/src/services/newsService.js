@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://soccer-news-01d44f32bcf0.herokuapp.com/api/fetch-news';
+const API_URL = "https://soccer-news-nu.vercel.app/api/fetch-news";
 
 // Fetch all soccer news articles
 export const fetchNews = async () => {
