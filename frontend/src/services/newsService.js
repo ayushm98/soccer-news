@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = "/api/fetch-news"; // Adjusted for relative path in production
+const API_URL = "https://soccer-news-theta.vercel.app/api/fetch-news"; // Adjusted for relative path in production
 
 // Fetch all soccer news articles
 
