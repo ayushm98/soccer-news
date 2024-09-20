@@ -21,13 +21,5 @@
       "src": "/(.*)",
       "dest": "/frontend/build/$1"
     }
-  ],
-  "build": {
-    "frontend": {
-      "use": "@vercel/static-build",
-      "src": "frontend/package.json",
-      "buildCommand": "npm run build",  
-      "outputDirectory": "frontend/build"
-    }
-  }
+  ]
 }
