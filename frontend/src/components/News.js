@@ -36,9 +36,7 @@ const News = () => {
     return <Typography variant="h6" color="error" align="center">{error}</Typography>;
   }
 
-  if (!articles || articles.length === 0) {
-    return <Typography variant="h6" align="center">No news articles available at the moment.</Typography>;
-  }
+ 
 
   return (
     <div>
