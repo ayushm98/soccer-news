@@ -27,6 +27,7 @@ const News = () => {
         setError('Error fetching news. Please try again later.');
       }
     };
+    
 
     getNews();
   }, []);
