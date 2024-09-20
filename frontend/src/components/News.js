@@ -7,33 +7,46 @@ import SourceIcon from '@mui/icons-material/Source';
 
 const News = () => {
   const [articles, setArticles] = useState([]);
-  
+  const [error, setError] = useState(null);
+
   // Define pastel color palette
   const pastelColors = ['#FEE2E2', '#FEF3C7', '#D1FAE5', '#DBEAFE', '#E9D5FF', '#FFF7ED'];
 
   useEffect(() => {
     const getNews = async () => {
-      const newsData = await fetchNews();
-      setArticles(newsData);
+      try {
+        const newsData = await fetchNews();
+
+        // Ensure newsData is an array
+        if (Array.isArray(newsData)) {
+          setArticles(newsData);
+        } else {
+          setError('Failed to fetch news or data format is incorrect.');
+        }
+      } catch (err) {
+        setError('Error fetching news. Please try again later.');
+      }
     };
 
     getNews();
   }, []);
 
+  if (error) {
+    return <Typography variant="h6" color="error" align="center">{error}</Typography>;
+  }
+
+  if (!articles || articles.length === 0) {
+    return <Typography variant="h6" align="center">No news articles available at the moment.</Typography>;
+  }
+
   return (
     <div>
-      {/* Enhanced and Centered Header */}
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
         <Typography 
           variant="h3" 
           component="h1" 
           align="center" 
-          sx={{ 
-            fontWeight: 'bold', 
-            color: '#3b82f6',  // Blue accent color
-            letterSpacing: 1.2, // Slight letter spacing for a clean look
-            textTransform: 'uppercase', // Optional: Make the header uppercase
-          }}
+          sx={{ fontWeight: 'bold', color: '#3b82f6', letterSpacing: 1.2, textTransform: 'uppercase' }}
         >
           Soccer Wealth Index
         </Typography>
@@ -46,12 +59,11 @@ const News = () => {
               sx={{ 
                 borderRadius: 3, 
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)', 
-                backgroundColor: pastelColors[index % pastelColors.length],  // Apply color in sequence
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease',    // Transition for smooth hover
-                '&:hover': {                                               // Hover effect
-                  transform: 'scale(1.02)',                                // Slightly scale up
-                  boxShadow: '0px 6px 30px rgba(0, 0, 0, 0.1)',            // Stronger shadow on hover
-                  backgroundColor: pastelColors[index % pastelColors.length] // Maintain the same background color on hover
+                backgroundColor: pastelColors[index % pastelColors.length],
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': { 
+                  transform: 'scale(1.02)', 
+                  boxShadow: '0px 6px 30px rgba(0, 0, 0, 0.1)'
                 }
               }}
             >
@@ -60,7 +72,6 @@ const News = () => {
                   {article.title}
                 </Typography>
 
-                {/* Add Date and Source with Icons */}
                 <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
                   <CalendarTodayIcon fontSize="small" /> {new Date(article.publishedAt).toLocaleDateString()} - <SourceIcon fontSize="small" /> {article.source}
                 </Typography>
